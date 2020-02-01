@@ -19,8 +19,11 @@ January 31, 2020
 import pandas as pd
 
 
+TMAX_LOC = 3
 TMAX_FLAG_LOC = 4
+TMIN_LOC = 5
 TMIN_FLAG_LOC = 6
+UNACCEPTABLE_FLAGS = ['I']  # data flags that indicate unreliable data
 
 
 def data_check(df, idx):
@@ -32,12 +35,28 @@ def data_check(df, idx):
     idx - the index of the row to be checked
     '''
     
-    # first verify that the temperature flags are acceptable
-    tmax_flags = df.iloc[i, TMAX_FLAG_LOC]
-    tmin_flags = df.iloc[i, TMIN_FLAG_LOC]
+    # verify that the data isn't missing
+    if pd.isna(df.iloc[idx, TMAX_LOC]) or pd.isna(df.iloc[idx, TMIN_LOC]):
+        return False
+    
+    # verify that the temperature flags are acceptable
+    tmax_flags = df.iloc[idx, TMAX_FLAG_LOC]
+    tmin_flags = df.iloc[idx, TMIN_FLAG_LOC]
     
     if len(tmax_flags) == 0 or len(tmin_flags) == 0:
         return False
+    
+    for i in range(len(tmax_flags)):
+        if tmax_flags[i] in UNACCEPTABLE_FLAGS:
+            return False
+    
+    # check each flags separately because they may be different lengths
+    for i in range(len(tmin_flags)):
+        if tmin_flags[i] in UNACCEPTABLE_FLAGS:
+            return False
+    
+    return True
+        
     
     
     
@@ -47,8 +66,9 @@ def data_check(df, idx):
 '''
 #=== Example of how to open an Excel file using Pandas ===
 df = pd.read_excel('data/paamiut_tempdata.xlsx', sheet_name = '2016157')
-print(len(df.iloc[0, 4]))
+print(pd.isna(df.iloc[2, 3]))
 print(len(""))
+
 #for i in df.index:
 '''
 

@@ -24,6 +24,16 @@ TMAX_FLAG_LOC = 4
 TMIN_LOC = 5
 TMIN_FLAG_LOC = 6
 UNACCEPTABLE_FLAGS = ['I']  # data flags that indicate unreliable data
+DATA = 'data/paamiut_tempdata2.xlsx'
+
+
+def open_df(filename):
+    '''
+    Open Excel data as a pandas DataFrame. Return the DataFrame.
+    '''
+    
+    df = pd.read_excel(filename)
+    return df
 
 
 def data_check(df, idx):
@@ -56,21 +66,16 @@ def data_check(df, idx):
             return False
     
     return True
+
+
+
         
     
     
     
+# === Main Function ===
+df = open_df(DATA)
 
-
-
-'''
-#=== Example of how to open an Excel file using Pandas ===
-df = pd.read_excel('data/paamiut_tempdata.xlsx', sheet_name = '2016157')
-print(pd.isna(df.iloc[2, 3]))
-print(len(""))
-
-#for i in df.index:
-'''
 
 
 

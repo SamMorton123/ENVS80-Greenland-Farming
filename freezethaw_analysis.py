@@ -223,26 +223,15 @@ def generate_thaw_freeze_data(df, start = 0):
         # add -1 to the dataset to indicate unavailable datsa
         else:
             data.append(-1)
-        
-        
-        '''
-        # estimate the spring date for that year
-        curr_idx = estimate_spring_date(df, TAVG_LOC, year, start_idx = curr_idx)
-        
-        # calc the number of thaw-freeze events for that year
-        thaw_freeze = calc_thaw_freeze(df, curr_idx)
-        
-        # add to the list of data
-        data.append(thaw_freeze)
-        '''
     
     return data
-        
 
-# === Main Function ===
-df = open_df(DATA)
-data = generate_thaw_freeze_data(df)
-print(data)
+
+def thaw_freeze_main(data):
+        df = open_df(data)
+        thaw_freezes = generate_thaw_freeze_data(df)
+        return thaw_freezes
+
 
 
 

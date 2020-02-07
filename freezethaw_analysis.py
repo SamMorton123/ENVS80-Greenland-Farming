@@ -227,8 +227,8 @@ def generate_thaw_freeze_data(df, start = 0):
 
 def thaw_freeze_main(data):
         df = open_df(data)
-        thaw_freezes = generate_thaw_freeze_data(df)
-        return thaw_freezes
+        (years, tfs) = generate_thaw_freeze_data(df)
+        return (years, tfs)
 
 
 

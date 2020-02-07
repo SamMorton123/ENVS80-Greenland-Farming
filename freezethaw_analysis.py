@@ -34,6 +34,8 @@ AUGUST = 8
 MONTH = 30
 FREEZING_TEMP = 0
 THAW_FREEZE_INTERVAL = 40
+FIRST_YEAR = 1958
+FINAL_YEAR = 2018
 
 
 def open_df(filename):
@@ -85,6 +87,10 @@ def locate_year_beginning(df, year, start_idx):
     year - the year you want the spring estimate for
     start_idx - the given starting index
     '''
+    
+    # check if the start idx is None
+    if start_idx is None:
+        return None
     
     # check that the start_idx doesn't put you beyond the year
     if df.iloc[start_idx, YEAR_LOC] > year or (df.iloc[start_idx, YEAR_LOC] == year and df.iloc[start_idx, MONTH_LOC] > JANUARY):
@@ -173,23 +179,70 @@ def calc_thaw_freeze(df, year_idx):
     date
     '''
     
+    # check year_idx
+    if year_idx is None:
+        return -1
+    
     # init counter of thaw-freeze events
     count = 0
-    print("first i is {} on {} {}".format(year_idx - THAW_FREEZE_INTERVAL, df.iloc[year_idx - THAW_FREEZE_INTERVAL, MONTH_LOC], df.iloc[year_idx - THAW_FREEZE_INTERVAL, MONTH_LOC]))
     for i in range(year_idx - THAW_FREEZE_INTERVAL, year_idx - 1):
         if thaw_freeze(df, i, TAVG_LOC):
             count += 1
     
     return count
+
+
+def generate_thaw_freeze_data(df, start = 0):
+    '''
+    Go through each year in the data and calculate how many thaw-freeze events
+    there are. Optional parameter allows you to specify which date to start at.
+    Assumes that each year should have enough data except 2019-2020.
+    df - the DataFrame
+    start - optional start index parameter
+    '''
     
+    # init list to hold the data
+    data = []
+    
+    # init curr_idx at start
+    curr_idx = start
+    
+    # loop through each year
+    for year in range(FIRST_YEAR, FINAL_YEAR + 1):
+        
+        try_date = estimate_spring_date(df, TAVG_LOC, year, start_idx = curr_idx)
+        if try_date is not None:
+            curr_idx = try_date
+        
+            # calc the number of thaw-freeze events for that year
+            thaw_freeze = calc_thaw_freeze(df, curr_idx)
+        
+            # add to the list of data
+            data.append(thaw_freeze)
+        
+        # add -1 to the dataset to indicate unavailable datsa
+        else:
+            data.append(-1)
+        
+        
+        '''
+        # estimate the spring date for that year
+        curr_idx = estimate_spring_date(df, TAVG_LOC, year, start_idx = curr_idx)
+        
+        # calc the number of thaw-freeze events for that year
+        thaw_freeze = calc_thaw_freeze(df, curr_idx)
+        
+        # add to the list of data
+        data.append(thaw_freeze)
+        '''
+    
+    return data
+        
 
 # === Main Function ===
 df = open_df(DATA)
-year_idx = estimate_spring_date(df, TAVG_LOC, 1959)
-print("year is {} on {} {}".format(year_idx, df.iloc[year_idx, MONTH_LOC], df.iloc[year_idx, DAY_LOC]))
-
-count = calc_thaw_freeze(df, year_idx)
-print("Count is {}".format(count))
+data = generate_thaw_freeze_data(df)
+print(data)
 
 
 

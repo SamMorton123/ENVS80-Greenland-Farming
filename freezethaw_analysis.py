@@ -201,7 +201,8 @@ def generate_thaw_freeze_data(df, start = 0):
     start - optional start index parameter
     '''
     
-    # init list to hold the data
+    # init lists to hold the data; one to hold each year with valid data, one to hold the data itself
+    years = []
     data = []
     
     # init curr_idx at start
@@ -218,20 +219,16 @@ def generate_thaw_freeze_data(df, start = 0):
             thaw_freeze = calc_thaw_freeze(df, curr_idx)
         
             # add to the list of data
+            years.append(year)
             data.append(thaw_freeze)
-        
-        # add -1 to the dataset to indicate unavailable datsa
-        else:
-            data.append(-1)
     
-    return data
+    return (years, data)
 
 
 def thaw_freeze_main(data):
         df = open_df(data)
         thaw_freezes = generate_thaw_freeze_data(df)
         return thaw_freezes
-
 
 
 
